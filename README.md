@@ -62,6 +62,9 @@ The application will be available at `http://localhost:5173`
   - `/assets` - Static assets
   - `/data` - Tutorial and practice content
 
+## Test Change
+This is a test change to verify our Git workflow is working correctly.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
