@@ -1,0 +1,311 @@
+.practice-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.practice-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.practice-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+.practice-description {
+  font-size: 1.125rem;
+  color: #666;
+}
+
+.practice-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+/* Terminal Section */
+.terminal-section {
+  min-height: 450px;
+  max-height: 550px;
+}
+
+.terminal-window {
+  background: #1a1a1a;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.terminal-titlebar {
+  background: #2d2d2d;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #404040;
+}
+
+.titlebar-buttons {
+  display: flex;
+  gap: 8px;
+  margin-right: 16px;
+}
+
+.titlebar-button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.titlebar-button.close {
+  background: #ff5f56;
+}
+
+.titlebar-button.minimize {
+  background: #ffbd2e;
+}
+
+.titlebar-button.maximize {
+  background: #27c93f;
+}
+
+.titlebar-title {
+  color: #999;
+  font-size: 0.875rem;
+  font-family: 'Fira Code', monospace;
+}
+
+.terminal-content {
+  flex: 1;
+  overflow: auto;
+  padding: 1.25rem;
+  font-size: 1.5rem !important;
+  line-height: 1.7 !important;
+}
+
+/* Info Section */
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.info-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.info-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+/* Repository Status */
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.status-item:last-child {
+  border-bottom: none;
+}
+
+.status-label {
+  color: #666;
+}
+
+.status-value {
+  font-family: 'Fira Code', monospace;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.branch-name {
+  background: #e8f0fe;
+  color: #1a73e8;
+}
+
+.staged-count {
+  background: #e6f4ea;
+  color: #137333;
+}
+
+.modified-count {
+  background: #fef7e0;
+  color: #b95000;
+}
+
+.commit-count {
+  background: #f1f3f4;
+  color: #3c4043;
+}
+
+/* Working Directory */
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background: #f8f9fa;
+}
+
+.file-icon {
+  color: #5f6368;
+  font-size: 1rem;
+}
+
+.file-status {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+}
+
+.file-status.untracked {
+  background: #f1f3f4;
+  color: #3c4043;
+}
+
+.file-status.modified {
+  background: #fef7e0;
+  color: #b95000;
+}
+
+.file-status.staged {
+  background: #e6f4ea;
+  color: #137333;
+}
+
+/* Quick Help */
+.help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #f1f3f4;
+}
+
+.help-toggle {
+  background: #e8f0fe;
+  color: #1a73e8;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.help-toggle:hover {
+  background: #d2e3fc;
+  transform: translateY(-1px);
+}
+
+.help-toggle:active {
+  transform: translateY(0);
+}
+
+.command-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.command-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.command-list::-webkit-scrollbar-track {
+  background: #f1f3f4;
+  border-radius: 3px;
+}
+
+.command-list::-webkit-scrollbar-thumb {
+  background: #dadce0;
+  border-radius: 3px;
+}
+
+.command-list::-webkit-scrollbar-thumb:hover {
+  background: #bdc1c6;
+}
+
+.command-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.9375rem;
+  color: #3c4043;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.command-item:hover {
+  background: #f8f9fa;
+}
+
+.command-item code {
+  font-family: 'Fira Code', monospace;
+  background: #e8f0fe;
+  color: #1a73e8;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  margin-right: 0.75rem;
+  min-width: 180px;
+  display: inline-block;
+  font-weight: 500;
+}
+
+.command-item span {
+  color: #5f6368;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .practice-content {
+    grid-template-columns: 1fr;
+  }
+
+  .terminal-section {
+    min-height: 400px;
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 640px) {
+  .practice-container {
+    padding: 1rem;
+  }
+
+  .practice-title {
+    font-size: 2rem;
+  }
+
+  .info-card {
+    padding: 1rem;
+  }
+}
