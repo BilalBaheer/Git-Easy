@@ -18,9 +18,25 @@ function Quiz() {
   const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
+    if (!quizId) {
+      // If no quizId provided, redirect to the first quiz
+      const firstQuiz = quizzes[0];
+      if (firstQuiz) {
+        navigate(`/quiz/${firstQuiz.id}`);
+      } else {
+        navigate('/tutorial');
+      }
+      return;
+    }
+
     const quiz = quizzes.find(q => q.id === parseInt(quizId));
     if (quiz) {
       setCurrentQuiz(quiz);
+      setCurrentQuestionIndex(0);
+      setScore(0);
+      setShowResults(false);
+      setSelectedAnswer(null);
+      setIsAnswered(false);
     } else {
       navigate('/tutorial');
     }
@@ -35,10 +51,20 @@ function Quiz() {
       return;
     }
 
-    // Navigate to the first section of the corresponding tutorial
-    const section = tutorial.sections[0];
-    const formattedTitle = section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    navigate(`/tutorial/${tutorial.id}-${formattedTitle}`);
+    // Navigate to the next tutorial if available
+    const currentTutorialIndex = tutorials.findIndex(t => t.id === tutorial.id);
+    const nextTutorial = tutorials[currentTutorialIndex + 1];
+    
+    if (nextTutorial && nextTutorial.sections.length > 0) {
+      const section = nextTutorial.sections[0];
+      const formattedTitle = section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      navigate(`/tutorial/${nextTutorial.id}-${formattedTitle}`);
+    } else {
+      // If no next tutorial, go back to the current tutorial
+      const section = tutorial.sections[0];
+      const formattedTitle = section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      navigate(`/tutorial/${tutorial.id}-${formattedTitle}`);
+    }
   };
 
   const handleAnswerSelect = (answerIndex) => {
