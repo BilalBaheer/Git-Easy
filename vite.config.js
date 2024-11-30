@@ -5,18 +5,22 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [
     react({
+      jsxRuntime: 'automatic',
       babel: {
         plugins: [
-          '@babel/plugin-transform-runtime'
-        ],
-        babelrc: false,
-        configFile: false,
+          ['@babel/plugin-transform-runtime', {
+            regenerator: true,
+            corejs: 3,
+            helpers: true,
+            useESModules: true,
+          }]
+        ]
       }
     })
   ],
   resolve: {
     alias: {
-      '@babel/runtime': '@babel/runtime/esm'
+      '@': '/src'
     }
   },
   optimizeDeps: {
