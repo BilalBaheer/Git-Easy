@@ -1,5 +1,5 @@
 import { Link, NavLink } from 'react-router-dom';
-import { BookOpenIcon, BeakerIcon, ChartBarIcon, AcademicCapIcon, CodeBracketIcon } from '@heroicons/react/24/outline';
+import { BookOpenIcon, BeakerIcon, ChartBarIcon, CodeBracketIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext';
 
 function Navbar() {
@@ -58,19 +58,6 @@ function Navbar() {
                 >
                   <ChartBarIcon className="w-5 h-5" />
                   <span>Progress</span>
-                </NavLink>
-                
-                <NavLink 
-                  to="/quiz" 
-                  className={({ isActive }) => 
-                    `flex items-center space-x-1 px-4 py-2 rounded-lg transition-all duration-200 ease-in-out
-                    ${isActive 
-                      ? 'bg-blue-50 text-blue-600 shadow-sm' 
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`
-                  }
-                >
-                  <AcademicCapIcon className="w-5 h-5" />
-                  <span>Quiz</span>
                 </NavLink>
 
                 <NavLink 
