@@ -23,6 +23,16 @@ function Tutorial() {
 
   const loadSection = useCallback(async () => {
     if (!section) {
+      // If no section specified, redirect to the first tutorial's first section
+      const firstTutorial = tutorials[0];
+      if (firstTutorial && firstTutorial.sections.length > 0) {
+        const firstSection = firstTutorial.sections[0];
+        const path = `${firstTutorial.id}-${formatSectionPath(firstSection.title)}`;
+        navigate(`/tutorial/${path}`);
+      } else {
+        setError(new Error('No tutorials available'));
+      }
+      setLoading(false);
       return;
     }
 
@@ -43,23 +53,29 @@ function Tutorial() {
       );
 
       if (!currentSection) {
-        setError(new Error(`Section ${sectionPath} not found`));
+        // If section not found, redirect to first section of the tutorial
+        const firstSection = currentTutorial.sections[0];
+        if (firstSection) {
+          const path = `${currentTutorial.id}-${formatSectionPath(firstSection.title)}`;
+          navigate(`/tutorial/${path}`);
+        } else {
+          setError(new Error('No sections available in this tutorial'));
+        }
         setLoading(false);
         return;
       }
 
-      const sectionIndex = currentTutorial.sections.indexOf(currentSection);
-      updateLastVisited(currentTutorial.id, sectionIndex);
       setTutorial(currentTutorial);
       setTutorialSection(currentSection);
-      setError(null);
+      setQuiz(quizzes.find(q => q.tutorialId === currentTutorial.id));
+      updateLastVisited(currentTutorial.id, currentTutorial.sections.indexOf(currentSection));
       setLoading(false);
+      setError(null);
     } catch (err) {
-      console.error('Error loading tutorial:', err);
       setError(err);
       setLoading(false);
     }
-  }, [section, updateLastVisited]);
+  }, [section, navigate, updateLastVisited]);
 
   useEffect(() => {
     if (tutorial) {

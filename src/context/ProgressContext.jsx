@@ -49,36 +49,51 @@ export function ProgressProvider({ children }) {
       if (prev.completedSections[key]) {
         return prev;
       }
-      const now = new Date().toISOString();
+
+      const now = new Date();
+      const lastActiveDate = new Date(prev.lastActive);
+      const isNewDay = now.toDateString() !== lastActiveDate.toDateString();
+      
+      // Update streak
+      let newStreak = prev.streak;
+      if (isNewDay) {
+        const daysSinceLastActive = Math.floor((now - lastActiveDate) / (1000 * 60 * 60 * 24));
+        newStreak = daysSinceLastActive === 1 ? prev.streak + 1 : 1;
+      }
+
       return {
         ...prev,
         completedSections: {
           ...prev.completedSections,
-          [key]: {
-            completedAt: now,
-            userId: user?.uid
-          }
+          [key]: now.toISOString()
         },
-        lastActive: now
+        lastActive: now.toISOString(),
+        streak: newStreak
       };
     });
-  }, [user]);
+  }, []);
 
   const updateLastVisited = useCallback((tutorialId, sectionIndex) => {
     setProgress(prev => {
-      if (prev.lastVisited?.tutorialId === tutorialId && 
-          prev.lastVisited?.sectionIndex === sectionIndex) {
-        return prev;
+      const now = new Date();
+      const lastActiveDate = new Date(prev.lastActive);
+      const isNewDay = now.toDateString() !== lastActiveDate.toDateString();
+      
+      // Update streak
+      let newStreak = prev.streak;
+      if (isNewDay) {
+        const daysSinceLastActive = Math.floor((now - lastActiveDate) / (1000 * 60 * 60 * 24));
+        newStreak = daysSinceLastActive === 1 ? prev.streak + 1 : 1;
       }
-      const now = new Date().toISOString();
+
       return {
         ...prev,
         lastVisited: {
           tutorialId,
-          sectionIndex,
-          timestamp: now
+          sectionIndex
         },
-        lastActive: now
+        lastActive: now.toISOString(),
+        streak: newStreak
       };
     });
   }, []);
@@ -99,31 +114,36 @@ export function ProgressProvider({ children }) {
     return Math.round((totalSections / totalAvailableSections) * 100);
   }, [progress.completedSections]);
 
-  const markQuizComplete = useCallback((quizId) => {
+  const markQuizComplete = useCallback((quizId, score) => {
     setProgress(prev => {
-      if (!prev.completedQuizzes) {
-        prev.completedQuizzes = {};
+      const now = new Date();
+      const lastActiveDate = new Date(prev.lastActive);
+      const isNewDay = now.toDateString() !== lastActiveDate.toDateString();
+      
+      // Update streak
+      let newStreak = prev.streak;
+      if (isNewDay) {
+        const daysSinceLastActive = Math.floor((now - lastActiveDate) / (1000 * 60 * 60 * 24));
+        newStreak = daysSinceLastActive === 1 ? prev.streak + 1 : 1;
       }
-      if (prev.completedQuizzes[quizId]) {
-        return prev;
-      }
-      const now = new Date().toISOString();
+
       return {
         ...prev,
         completedQuizzes: {
           ...prev.completedQuizzes,
           [quizId]: {
-            completedAt: now,
-            userId: user?.uid
+            completedAt: now.toISOString(),
+            score
           }
         },
-        lastActive: now
+        lastActive: now.toISOString(),
+        streak: newStreak
       };
     });
-  }, [user]);
+  }, []);
 
   const isQuizCompleted = useCallback((quizId) => {
-    return Boolean(progress.completedQuizzes?.[`quiz-${quizId}`]);
+    return Boolean(progress.completedQuizzes?.[quizId]);
   }, [progress.completedQuizzes]);
 
   const value = {
