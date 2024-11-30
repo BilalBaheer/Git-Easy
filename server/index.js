@@ -9,6 +9,13 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
+// Handle Vercel's feedback script requests
+app.use('/_next-live/feedback/feedback.js', (req, res, next) => {
+  res.setHeader('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval' vercel.live");
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  next();
+});
+
 // CORS configuration
 app.use(cors({
   origin: '*',

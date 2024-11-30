@@ -8,8 +8,19 @@
   ],
   "routes": [
     {
+      "src": "/_next-live/feedback/feedback.js",
+      "headers": {
+        "Content-Security-Policy": "default-src 'self' 'unsafe-inline' 'unsafe-eval' vercel.live",
+        "Access-Control-Allow-Origin": "*"
+      },
+      "continue": true
+    },
+    {
       "src": "/api/(.*)",
       "dest": "index.js"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
