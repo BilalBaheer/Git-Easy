@@ -3,32 +3,43 @@ require('dotenv').config();
 
 const connectDB = async () => {
   try {
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI is not defined in environment variables');
+    }
+
     console.log('Attempting to connect to MongoDB...');
-    console.log('MongoDB URI:', process.env.MONGODB_URI);
     
     await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
     });
     
     console.log('MongoDB connected successfully');
     
-    // Test the connection by listing collections
-    const collections = await mongoose.connection.db.listCollections().toArray();
-    console.log('Available collections:', collections.map(c => c.name));
+    mongoose.connection.on('error', err => {
+      console.error('MongoDB connection error:', err);
+    });
+
+    mongoose.connection.on('disconnected', () => {
+      console.log('MongoDB disconnected');
+    });
+
+    process.on('SIGINT', async () => {
+      await mongoose.connection.close();
+      process.exit(0);
+    });
     
   } catch (error) {
     console.error('MongoDB connection error:', error);
-    console.error('Error details:', {
-      name: error.name,
-      message: error.message,
-      code: error.code
-    });
-    process.exit(1);
+    throw error; // Re-throw to be handled by the main error handler
   }
 };
 
-// Add mongoose debug mode
-mongoose.set('debug', true);
+// Add mongoose debug mode if not in production
+if (process.env.NODE_ENV !== 'production') {
+  mongoose.set('debug', true);
+}
 
 module.exports = connectDB;
