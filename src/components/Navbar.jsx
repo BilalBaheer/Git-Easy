@@ -88,7 +88,7 @@ function Navbar() {
 
                 {/* User Profile and Logout */}
                 <div className="flex items-center ml-6 pl-6 border-l border-gray-200">
-                  <span className="text-gray-700 font-medium mr-4">{user.email}</span>
+                  <span className="text-gray-700 font-medium mr-4">{user.email.split('@')[0]}</span>
                   <button
                     onClick={logout}
                     className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
