@@ -10,20 +10,36 @@ export function useProgress() {
 export function ProgressProvider({ children }) {
   const { user } = useAuth();
   const [progress, setProgress] = useState(() => {
-    const savedProgress = localStorage.getItem(`progress_${user?.uid}`);
-    return savedProgress ? JSON.parse(savedProgress) : {
-      completedSections: {},
-      completedQuizzes: {},
-      lastVisited: null,
-      startDate: new Date().toISOString(),
-      streak: 0,
-      lastActive: new Date().toISOString()
-    };
+    try {
+      const savedProgress = localStorage.getItem(`progress_${user?.uid}`);
+      return savedProgress ? JSON.parse(savedProgress) : {
+        completedSections: {},
+        completedQuizzes: {},
+        lastVisited: null,
+        startDate: new Date().toISOString(),
+        streak: 0,
+        lastActive: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('Error loading progress:', error);
+      return {
+        completedSections: {},
+        completedQuizzes: {},
+        lastVisited: null,
+        startDate: new Date().toISOString(),
+        streak: 0,
+        lastActive: new Date().toISOString()
+      };
+    }
   });
 
   useEffect(() => {
     if (user) {
-      localStorage.setItem(`progress_${user.uid}`, JSON.stringify(progress));
+      try {
+        localStorage.setItem(`progress_${user.uid}`, JSON.stringify(progress));
+      } catch (error) {
+        console.error('Error saving progress:', error);
+      }
     }
   }, [progress, user]);
 
@@ -33,15 +49,17 @@ export function ProgressProvider({ children }) {
       if (prev.completedSections[key]) {
         return prev;
       }
+      const now = new Date().toISOString();
       return {
         ...prev,
         completedSections: {
           ...prev.completedSections,
           [key]: {
-            completedAt: new Date().toISOString(),
+            completedAt: now,
             userId: user?.uid
           }
-        }
+        },
+        lastActive: now
       };
     });
   }, [user]);
@@ -52,13 +70,15 @@ export function ProgressProvider({ children }) {
           prev.lastVisited?.sectionIndex === sectionIndex) {
         return prev;
       }
+      const now = new Date().toISOString();
       return {
         ...prev,
         lastVisited: {
           tutorialId,
           sectionIndex,
-          timestamp: new Date().toISOString()
-        }
+          timestamp: now
+        },
+        lastActive: now
       };
     });
   }, []);
@@ -75,33 +95,35 @@ export function ProgressProvider({ children }) {
 
   const getOverallProgress = useCallback(() => {
     const totalSections = Object.keys(progress.completedSections).length;
-    // You might want to get the total number of sections from your tutorials data
-    // This is a placeholder value
-    const totalAvailableSections = 22; // 11 tutorials × 2 sections each
+    const totalAvailableSections = 22; 
     return Math.round((totalSections / totalAvailableSections) * 100);
   }, [progress.completedSections]);
 
   const markQuizComplete = useCallback((quizId) => {
     setProgress(prev => {
-      const key = `quiz-${quizId}`;
-      if (prev.completedQuizzes[key]) {
+      if (!prev.completedQuizzes) {
+        prev.completedQuizzes = {};
+      }
+      if (prev.completedQuizzes[quizId]) {
         return prev;
       }
+      const now = new Date().toISOString();
       return {
         ...prev,
         completedQuizzes: {
           ...prev.completedQuizzes,
-          [key]: {
-            completedAt: new Date().toISOString(),
+          [quizId]: {
+            completedAt: now,
             userId: user?.uid
           }
-        }
+        },
+        lastActive: now
       };
     });
   }, [user]);
 
   const isQuizCompleted = useCallback((quizId) => {
-    return Boolean(progress.completedQuizzes[`quiz-${quizId}`]);
+    return Boolean(progress.completedQuizzes?.[`quiz-${quizId}`]);
   }, [progress.completedQuizzes]);
 
   const value = {
