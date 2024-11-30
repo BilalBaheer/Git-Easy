@@ -1,5 +1,5 @@
 import { Link, NavLink } from 'react-router-dom';
-import { BookOpenIcon, BeakerIcon, ChartBarIcon } from '@heroicons/react/24/outline';
+import { BookOpenIcon, BeakerIcon, ChartBarIcon, AcademicCapIcon, CodeBracketIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext';
 
 function Navbar() {
@@ -35,10 +35,12 @@ function Navbar() {
                 </NavLink>
                 
                 <NavLink to="/quiz" className={({ isActive }) => `px-4 py-2 rounded-lg ${isActive ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}>
-                  Quiz
+                  <AcademicCapIcon className="w-5 h-5" />
+                  <span>Quiz</span>
                 </NavLink>
                 <NavLink to="/visualizer" className={({ isActive }) => `px-4 py-2 rounded-lg ${isActive ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}>
-                  Visualizer
+                  <CodeBracketIcon className="w-5 h-5" />
+                  <span>Visualizer</span>
                 </NavLink>
 
                 <div className="flex items-center space-x-4 ml-4 pl-4 border-l border-gray-200">
