@@ -27,6 +27,7 @@
     "tailwindcss": "^3.4.15"
   },
   "devDependencies": {
+    "@babel/core": "^7.24.0",
     "@babel/plugin-transform-runtime": "^7.24.0",
     "@eslint/js": "^9.15.0",
     "@types/react": "^18.3.12",

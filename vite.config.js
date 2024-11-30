@@ -1,7 +1,25 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
+// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react({
+      babel: {
+        plugins: [
+          '@babel/plugin-transform-runtime'
+        ],
+        babelrc: false,
+        configFile: false,
+      }
+    })
+  ],
+  resolve: {
+    alias: {
+      '@babel/runtime': '@babel/runtime/esm'
+    }
+  },
+  optimizeDeps: {
+    include: ['@babel/runtime/helpers/interopRequireDefault']
+  }
 })
