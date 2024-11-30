@@ -1,113 +1,74 @@
-import React, { useState } from 'react';
-import Tree from 'react-d3-tree';
+import React, { useState, useRef, useCallback } from 'react';
+import { Gitgraph } from '@gitgraph/react';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 const Visualizer = () => {
   const [selectedBranch, setSelectedBranch] = useState('main');
-  const [treeData, setTreeData] = useState({
-    name: 'main',
-    attributes: {
-      commit: 'initial'
-    },
-    children: [
-      {
-        name: 'feature',
-        attributes: {
-          commit: 'initial'
-        },
-        children: []
-      },
-      {
-        name: 'bugfix',
-        attributes: {
-          commit: 'initial'
-        },
-        children: []
+  const [scale, setScale] = useState(1);
+  const graphRef = useRef(null);
+  const branchesRef = useRef({});
+
+  const initGraph = useCallback((gitgraph) => {
+    if (!gitgraph) return;
+    
+    // Store the gitgraph instance
+    graphRef.current = gitgraph;
+
+    // Create main branch
+    const main = gitgraph.branch({
+      name: "main",
+      style: {
+        color: "#2563eb"
       }
-    ]
-  });
-
-  const addCommit = () => {
-    setTreeData(prevData => {
-      const newData = { ...prevData };
-      const addCommitToNode = (node) => {
-        if (node.name === selectedBranch) {
-          const newCommit = {
-            name: `${selectedBranch}-commit`,
-            attributes: {
-              commit: `commit-${Date.now()}`
-            },
-            children: []
-          };
-          node.children = [...(node.children || []), newCommit];
-          return true;
-        }
-        if (node.children) {
-          for (let child of node.children) {
-            if (addCommitToNode(child)) return true;
-          }
-        }
-        return false;
-      };
-      addCommitToNode(newData);
-      return newData;
     });
-  };
+    main.commit("Initial commit");
+    branchesRef.current.main = main;
 
-  const mergeToMain = () => {
+    // Create feature branch
+    const feature = main.branch({
+      name: "feature",
+      style: {
+        color: "#16a34a"
+      }
+    });
+    feature.commit("Feature branch created");
+    branchesRef.current.feature = feature;
+
+    // Create bugfix branch
+    const bugfix = main.branch({
+      name: "bugfix",
+      style: {
+        color: "#dc2626"
+      }
+    });
+    bugfix.commit("Bugfix branch created");
+    branchesRef.current.bugfix = bugfix;
+  }, []);
+
+  const addCommit = useCallback(() => {
+    const branch = branchesRef.current[selectedBranch];
+    if (branch) {
+      branch.commit(`New commit on ${selectedBranch}`);
+    }
+  }, [selectedBranch]);
+
+  const mergeToMain = useCallback(() => {
     if (selectedBranch === 'main') return;
 
-    setTreeData(prevData => {
-      const newData = { ...prevData };
-      const findBranch = (node) => {
-        if (node.name === selectedBranch) {
-          return node;
-        }
-        if (node.children) {
-          for (let child of node.children) {
-            const found = findBranch(child);
-            if (found) return found;
-          }
-        }
-        return null;
-      };
+    const sourceBranch = branchesRef.current[selectedBranch];
+    const mainBranch = branchesRef.current.main;
 
-      const branchToMerge = findBranch(newData);
-      if (branchToMerge && branchToMerge.children && branchToMerge.children.length > 0) {
-        const lastCommit = branchToMerge.children[branchToMerge.children.length - 1];
-        newData.children.push({
-          name: 'merge',
-          attributes: {
-            commit: `merged-${selectedBranch}-${Date.now()}`
-          },
-          children: []
-        });
-      }
-      return newData;
+    if (sourceBranch && mainBranch) {
+      sourceBranch.merge(mainBranch, `Merge ${selectedBranch} into main`);
+    }
+  }, [selectedBranch]);
+
+  const handleZoom = useCallback((delta) => {
+    setScale(prevScale => {
+      const newScale = prevScale + delta;
+      return Math.max(0.5, Math.min(2, newScale));
     });
-  };
-
-  const renderCustomNode = ({ nodeDatum }) => (
-    <g>
-      <circle
-        r={25}
-        fill={
-          nodeDatum.name === 'main' ? '#2563eb' :
-          nodeDatum.name === 'feature' ? '#16a34a' :
-          nodeDatum.name === 'bugfix' ? '#dc2626' :
-          nodeDatum.name === 'merge' ? '#9333ea' :
-          '#64748b'
-        }
-      />
-      <text
-        dy=".31em"
-        x={35}
-        textAnchor="start"
-        style={{ fill: 'white', fontSize: '16px' }}
-      >
-        {nodeDatum.name}
-      </text>
-    </g>
-  );
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -139,18 +100,39 @@ const Visualizer = () => {
             >
               Merge to Main
             </button>
+
+            <div className="inline-flex items-center space-x-2">
+              <button
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                onClick={() => handleZoom(-0.1)}
+              >
+                -
+              </button>
+              <span className="text-gray-700">{Math.round(scale * 100)}%</span>
+              <button
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                onClick={() => handleZoom(0.1)}
+              >
+                +
+              </button>
+            </div>
           </div>
 
-          <div style={{ height: '800px', border: '1px solid #e5e7eb' }} className="rounded-lg overflow-hidden">
-            <Tree
-              data={treeData}
-              orientation="vertical"
-              renderCustomNodeElement={renderCustomNode}
-              pathFunc="step"
-              translate={{ x: 400, y: 100 }}
-              separation={{ siblings: 2.5, nonSiblings: 3 }}
-              zoom={0.8}
-            />
+          <div 
+            style={{ 
+              height: '800px', 
+              border: '1px solid #e5e7eb',
+              transform: `scale(${scale})`,
+              transformOrigin: 'top center',
+              transition: 'transform 0.2s ease-out'
+            }} 
+            className="rounded-lg overflow-hidden"
+          >
+            <ErrorBoundary>
+              <Gitgraph options={{ author: "GitBetter <gitbetter@example.com>" }}>
+                {initGraph}
+              </Gitgraph>
+            </ErrorBoundary>
           </div>
 
           <div className="mt-6">
@@ -159,8 +141,7 @@ const Visualizer = () => {
               <li>Select a branch from the dropdown menu</li>
               <li>Click "Add Commit" to add a new commit to the selected branch</li>
               <li>Click "Merge to Main" to merge the selected branch into main</li>
-              <li>Drag the visualization area to pan</li>
-              <li>Use mouse wheel to zoom in/out</li>
+              <li>Use the + and - buttons to zoom in and out</li>
             </ul>
           </div>
         </div>
