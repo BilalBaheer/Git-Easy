@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import tutorials from '../../data/tutorials';
+
+const formatSectionPath = (title) => {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+};
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -17,7 +22,11 @@ function Login() {
 
     try {
       await login(email, password);
-      navigate('/tutorial/basics');
+      // Get the first tutorial and its first section
+      const firstTutorial = tutorials[0];
+      const firstSection = firstTutorial.sections[0];
+      const path = `${firstTutorial.id}-${formatSectionPath(firstSection.title)}`;
+      navigate(`/tutorial/${path}`);
     } catch (err) {
       setError('Failed to log in. Please check your credentials.');
     } finally {
