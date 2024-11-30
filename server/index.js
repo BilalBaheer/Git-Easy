@@ -18,9 +18,10 @@ app.use('/_next-live/feedback/feedback.js', (req, res, next) => {
 
 // CORS configuration
 app.use(cors({
-  origin: '*',
+  origin: ['https://git-easy-frontend-diis1yhty-bilalbaheers-projects.vercel.app', 'http://localhost:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['X-Requested-With', 'Content-Type', 'Accept'],
+  credentials: true
 }));
 
 app.use(express.json());

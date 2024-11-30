@@ -8,16 +8,14 @@
   ],
   "routes": [
     {
-      "src": "/_next-live/feedback/feedback.js",
+      "src": "/(.*)",
+      "dest": "index.js",
       "headers": {
-        "Content-Security-Policy": "default-src 'self' 'unsafe-inline' 'unsafe-eval' vercel.live",
-        "Access-Control-Allow-Origin": "*"
-      },
-      "continue": true
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "index.js"
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept",
+        "Content-Security-Policy": "default-src 'self' https: http:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http: vercel.live; style-src 'self' 'unsafe-inline' https: http:; img-src 'self' data: https: http:; font-src 'self' data: https: http:;"
+      }
     }
   ],
   "env": {
