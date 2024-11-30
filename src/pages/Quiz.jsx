@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CheckCircleIcon, XCircleIcon, ArrowLongRightIcon } from '@heroicons/react/24/outline';
-import quizzes from '../data/quizzes';
-import tutorials from '../data/tutorials';
 import { useProgress } from '../context/ProgressContext';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 function Quiz() {
   const { quizId } = useParams();
@@ -16,27 +16,28 @@ function Quiz() {
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!quizId) {
-      // If no quizId provided, redirect to the first quiz
-      const firstQuiz = quizzes[0];
-      if (firstQuiz) {
-        navigate(`/quiz/${firstQuiz.id}`);
-      } else {
-        navigate('/tutorial');
+    const fetchQuiz = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/quiz/${quizId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch quiz');
+        }
+        const data = await response.json();
+        setCurrentQuiz(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching quiz:', err);
+        setError('Failed to load quiz. Please try again later.');
       }
-      return;
-    }
+    };
 
-    // Find the current quiz
-    const quiz = quizzes.find(q => q.id === parseInt(quizId, 10));
-    if (quiz) {
-      setCurrentQuiz(quiz);
-    } else {
-      navigate('/tutorial');
+    if (quizId) {
+      fetchQuiz();
     }
-  }, [quizId, navigate]);
+  }, [quizId]);
 
   const handleAnswerSelect = (answer) => {
     if (isAnswered) return;
@@ -68,15 +69,16 @@ function Quiz() {
   };
 
   const handleNextTutorial = () => {
-    const currentTutorialIndex = tutorials.findIndex(t => t.id === currentQuiz.tutorialId);
-    if (currentTutorialIndex < tutorials.length - 1) {
-      navigate(`/tutorial/${tutorials[currentTutorialIndex + 1].id}`);
+    const currentTutorialIndex = currentQuiz.tutorials.findIndex(t => t.id === currentQuiz.tutorialId);
+    if (currentTutorialIndex < currentQuiz.tutorials.length - 1) {
+      navigate(`/tutorial/${currentQuiz.tutorials[currentTutorialIndex + 1].id}`);
     } else {
       navigate('/progress');
     }
   };
 
   if (!currentQuiz) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   if (showResults) {
     const passingScore = Math.ceil(currentQuiz.questions.length * 0.7);
