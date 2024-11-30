@@ -45,7 +45,7 @@ function Home() {
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-20">
             <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600">10K+</div>
+              <div className="text-3xl font-bold text-blue-600">2K+</div>
               <div className="text-gray-600">Active Learners</div>
             </div>
             <div className="text-center">

@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { ChevronLeftIcon, ChevronRightIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import tutorials from '../data/tutorials';
+import quizzes from '../data/quizzes';
 import { useProgress } from '../context/ProgressContext';
 
 const formatSectionPath = (title) => {
@@ -18,6 +19,7 @@ function Tutorial() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tutorialList] = useState(tutorials);
+  const [quiz, setQuiz] = useState(null);
 
   const loadSection = useCallback(async () => {
     if (!section) {
@@ -58,6 +60,13 @@ function Tutorial() {
       setLoading(false);
     }
   }, [section, updateLastVisited]);
+
+  useEffect(() => {
+    if (tutorial) {
+      const relatedQuiz = quizzes.find(q => q.tutorialId === tutorial.id);
+      setQuiz(relatedQuiz);
+    }
+  }, [tutorial]);
 
   // Handle initial redirect
   useEffect(() => {
@@ -270,6 +279,15 @@ function Tutorial() {
                 >
                   Complete & Continue
                 </button>
+              )}
+              
+              {quiz && currentIndex === tutorial.sections.length - 1 && (
+                <Link
+                  to={`/quiz/${quiz.id}`}
+                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  Take Quiz
+                </Link>
               )}
               
               <button

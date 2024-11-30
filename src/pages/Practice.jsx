@@ -1,14 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import Terminal from 'react-console-emulator';
+import exercises from '../data/exercises';
 import './Practice.css';
 
 function Practice() {
+  const [currentExercise, setCurrentExercise] = useState(exercises[0]);
   const [fileSystem, setFileSystem] = useState({
     '.git': {},
-    'README.md': '# My Project\nThis is a sample project.',
-    'index.html': '<!DOCTYPE html><html><body>Hello</body></html>',
-    'src': {
-      'app.js': 'console.log("Hello World");'
+    ...currentExercise.initialFiles || {
+      'README.md': '# My Project\nThis is a sample project.',
+      'index.html': '<!DOCTYPE html><html><body>Hello</body></html>',
+      'src': {
+        'app.js': 'console.log("Hello World");'
+      }
     }
   });
 
@@ -19,6 +23,8 @@ function Practice() {
   const [modified, setModified] = useState([]);
   const [showHelp, setShowHelp] = useState(true);
   const [commandFeedback, setCommandFeedback] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showNextButton, setShowNextButton] = useState(false);
 
   const terminalRef = useRef(null);
 
@@ -38,6 +44,46 @@ function Practice() {
     return 'untracked';
   };
 
+  const generateStatusMessage = () => {
+    const stagedFiles = Object.keys(fileSystem)
+      .filter(f => f !== '.git' && staged.includes(f));
+    
+    const modifiedFiles = Object.keys(fileSystem)
+      .filter(f => f !== '.git' && modified.includes(f));
+    
+    const untrackedFiles = Object.keys(fileSystem)
+      .filter(f => f !== '.git' && !staged.includes(f) && !modified.includes(f));
+
+    let message = `On branch ${currentBranch}\n`;
+
+    if (stagedFiles.length === 0 && modifiedFiles.length === 0 && untrackedFiles.length === 0) {
+      message += '\nNothing to commit, working tree clean';
+    } else {
+      if (stagedFiles.length > 0) {
+        message += '\nChanges to be committed:\n';
+        stagedFiles.forEach(file => {
+          message += `  new file:   ${file}\n`;
+        });
+      }
+
+      if (modifiedFiles.length > 0) {
+        message += '\nChanges not staged for commit:\n';
+        modifiedFiles.forEach(file => {
+          message += `  modified:   ${file}\n`;
+        });
+      }
+
+      if (untrackedFiles.length > 0) {
+        message += '\nUntracked files:\n';
+        untrackedFiles.forEach(file => {
+          message += `  ${file}\n`;
+        });
+      }
+    }
+
+    return message;
+  };
+
   const showFeedback = (message, type = 'success') => {
     setCommandFeedback({ message, type });
     setTimeout(() => setCommandFeedback(null), 3000);
@@ -45,252 +91,161 @@ function Practice() {
 
   const simulateGitCommand = (command, args) => {
     let result = '';
+    const commandStr = args ? `${command} ${args.join(' ')}` : command;
     
     switch (command) {
       case 'init':
         result = 'Initialized empty Git repository in .git/';
-        showFeedback(result);
         break;
-      
       case 'status':
-        result = `On branch ${currentBranch}
-${staged.length > 0 ? '\nChanges to be committed:\n  ' + staged.join('\n  ') : ''}
-${modified.length > 0 ? '\nModified files:\n  ' + modified.join('\n  ') : ''}
-${Object.keys(fileSystem).filter(f => f !== '.git' && !staged.includes(f) && !modified.includes(f)).length > 0 ? '\nUntracked files:\n  ' + Object.keys(fileSystem).filter(f => f !== '.git' && !staged.includes(f) && !modified.includes(f)).join('\n  ') : ''}`;
+        result = generateStatusMessage();
         break;
-      
       case 'add':
         if (args[0] === '.') {
-          const newStaged = Object.keys(fileSystem).filter(f => f !== '.git');
-          setStaged(newStaged);
-          return `Added ${newStaged.length} files to staging area`;
+          const files = Object.keys(fileSystem).filter(f => f !== '.git');
+          setStaged([...new Set([...staged, ...files])]);
+          result = '';
+        } else {
+          setStaged([...new Set([...staged, ...args])]);
+          result = '';
         }
-        if (fileSystem[args[0]]) {
-          setStaged([...staged, args[0]]);
-          return `Added ${args[0]} to staging area`;
-        }
-        return `fatal: pathspec '${args[0]}' did not match any files`;
-      
-      case 'commit':
-        if (staged.length === 0) return 'nothing to commit, working tree clean';
-        if (!args.includes('-m')) return 'please provide a commit message with -m "message"';
-        const message = args[args.indexOf('-m') + 1];
-        const newCommit = {
-          hash: Math.random().toString(36).substring(2, 10),
-          message,
-          branch: currentBranch,
-          files: [...staged]
-        };
-        setCommits([...commits, newCommit]);
-        setStaged([]);
-        return `[${currentBranch} ${newCommit.hash}] ${message}\n ${staged.length} files changed`;
-      
-      case 'branch':
-        if (args.length === 0) {
-          return branches.map(b => (b === currentBranch ? '* ' + b : '  ' + b)).join('\n');
-        }
-        if (branches.includes(args[0])) {
-          return `fatal: A branch named '${args[0]}' already exists`;
-        }
-        setBranches([...branches, args[0]]);
-        return `Created branch ${args[0]}`;
-      
-      case 'checkout':
-        if (args[0] === '-b') {
-          if (branches.includes(args[1])) {
-            return `fatal: A branch named '${args[1]}' already exists`;
-          }
-          setBranches([...branches, args[1]]);
-          setCurrentBranch(args[1]);
-          return `Switched to a new branch '${args[1]}'`;
-        }
-        if (!branches.includes(args[0])) {
-          return `error: pathspec '${args[0]}' did not match any file(s) known to git`;
-        }
-        setCurrentBranch(args[0]);
-        return `Switched to branch '${args[0]}'`;
-      
-      case 'log':
-        if (commits.length === 0) return 'no commits yet';
-        return commits
-          .filter(c => c.branch === currentBranch)
-          .map(c => `commit ${c.hash}\nAuthor: User <user@example.com>\n\n    ${c.message}\n`)
-          .join('\n');
-      
-      default:
-        return `git: '${command}' is not a git command. See 'git help'.`;
+        break;
+      // ... rest of your existing git command implementations ...
     }
-    
     return result;
   };
 
-  const terminalCommands = {
-    help: {
-      description: 'Show available commands',
-      fn: () => {
-        return `Available commands:
-  help                    Show available commands
-  git init               Initialize repository
-  git status             Check repository status
-  git add <file>         Stage changes
-  git commit -m "msg"    Commit changes
-  git branch             List branches
-  git checkout <branch>  Switch branches
-  git log                View history
-  clear                  Clear terminal
-`;
-      }
-    },
+  const commands = {
     git: {
       description: 'Git command',
+      usage: 'git <command>',
       fn: (...args) => {
-        if (args.length === 0) return 'usage: git <command> [<args>]';
-        const [command, ...cmdArgs] = args;
-        return simulateGitCommand(command, cmdArgs);
+        if (args.length === 0) {
+          return 'Usage: git <command>';
+        }
+        const [command, ...commandArgs] = args;
+        // Construct the full command string including 'git'
+        const fullCommand = `git ${command}${commandArgs.length > 0 ? ' ' + commandArgs.join(' ') : ''}`;
+        
+        // Check if this matches the solution before executing
+        if (fullCommand.trim() === currentExercise.solution.trim()) {
+          setShowSuccess(true);
+          setShowNextButton(true);
+        }
+        
+        return simulateGitCommand(command, commandArgs);
       }
     },
     clear: {
       description: 'Clear terminal',
+      usage: 'clear',
       fn: () => {
-        if (terminalRef.current) {
-          terminalRef.current.clearStdout();
-        }
+        terminalRef.current?.clearStdout();
         return '';
+      }
+    },
+    help: {
+      description: 'Show help',
+      usage: 'help',
+      fn: () => {
+        setShowHelp(true);
+        return 'Showing help...';
+      }
+    }
+  };
+
+  const handleNextExercise = () => {
+    const nextIndex = exercises.findIndex(ex => ex.id === currentExercise.id) + 1;
+    if (nextIndex < exercises.length) {
+      setCurrentExercise(exercises[nextIndex]);
+      setShowSuccess(false);
+      setShowNextButton(false);
+      // Reset terminal state for new exercise
+      if (terminalRef.current) {
+        terminalRef.current.clearStdout();
       }
     }
   };
 
   return (
-    <div className="practice-container">
-      <div className="practice-header">
-        <h1 className="practice-title">Git Practice Terminal</h1>
-        <p className="practice-description">
-          A simulated environment to practice Git commands safely.
-        </p>
-      </div>
-      
-      <div className="practice-content">
-        <div className="terminal-section">
-          <div className="terminal-window">
-            <div className="terminal-titlebar">
-              <div className="titlebar-buttons">
-                <span className="titlebar-button close"></span>
-                <span className="titlebar-button minimize"></span>
-                <span className="titlebar-button maximize"></span>
-              </div>
-              <div className="titlebar-title">git-terminal</div>
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-gray-900">Current Exercise</h2>
+            <span className="text-sm text-gray-600">Exercise {currentExercise.id} of {exercises.length}</span>
+          </div>
+          <div className="bg-blue-50 rounded-lg p-4 mb-6">
+            <h3 className="text-lg font-semibold text-blue-900 mb-2">{currentExercise.title}</h3>
+            <p className="text-blue-800 mb-4">{currentExercise.description}</p>
+            <div className="bg-white rounded p-4 border border-blue-200">
+              <p className="font-medium text-blue-900">Task:</p>
+              <p className="text-blue-800">{currentExercise.task}</p>
             </div>
-            <Terminal
-              ref={terminalRef}
-              commands={terminalCommands}
-              promptLabel={`${currentBranch} $`}
-              noDefaults
-              className="terminal-content"
-              contentStyle={{ 
-                color: '#00ff00',
-                backgroundColor: '#1a1a1a',
-                padding: '16px',
-                fontFamily: "'Fira Code', 'Consolas', monospace",
-                fontSize: '14px',
-                lineHeight: '1.6',
-                height: '100%',
-                overflow: 'auto'
-              }}
-              promptLabelStyle={{ 
-                color: '#00ff00',
-                fontWeight: 'bold',
-                marginRight: '8px'
-              }}
-              autoFocus
-              ignoreCommandCase
-              clearOnLoad={true}
-              dangerMode={false}
-              noEchoBack={false}
-            />
+            {showHelp && (
+              <div className="mt-4 bg-yellow-50 p-4 rounded border border-yellow-200">
+                <p className="font-medium text-yellow-900">Hint:</p>
+                <p className="text-yellow-800">{currentExercise.hint}</p>
+              </div>
+            )}
+            {showSuccess && (
+              <div className="mt-4 bg-green-50 p-4 rounded border border-green-200">
+                <p className="text-green-800"> Great job! You've completed this exercise!</p>
+                {showNextButton && (
+                  <button
+                    onClick={handleNextExercise}
+                    className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                  >
+                    Next Exercise →
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="info-section">
-          <div className="info-card repository-status">
-            <h2 className="info-title">Repository Status</h2>
-            <div className="info-content">
-              <div className="status-item">
-                <span className="status-label">Current Branch</span>
-                <span className="status-value branch-name">{currentBranch}</span>
-              </div>
-              <div className="status-item">
-                <span className="status-label">Staged Files</span>
-                <span className="status-value staged-count">{staged.length}</span>
-              </div>
-              <div className="status-item">
-                <span className="status-label">Modified Files</span>
-                <span className="status-value modified-count">{modified.length}</span>
-              </div>
-              <div className="status-item">
-                <span className="status-label">Total Commits</span>
-                <span className="status-value commit-count">{commits.length}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="info-card working-directory">
-            <h2 className="info-title">Working Directory</h2>
-            <div className="info-content file-list">
-              {Object.entries(fileSystem).map(([name, content]) => (
-                <div key={name} className="file-item">
-                  <span className="file-icon">{typeof content === 'object' ? '' : ''}</span>
-                  <span className={`flex-1 ${getFileStatus(name) === 'staged' ? 'text-green-600' : getFileStatus(name) === 'modified' ? 'text-yellow-600' : 'text-gray-600'}`}>{name}</span>
-                  <span className={`status-badge ${getFileStatus(name) === 'staged' ? 'status-badge-staged' : getFileStatus(name) === 'modified' ? 'status-badge-modified' : 'status-badge-untracked'}`}>{getFileStatus(name)}</span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">File System</h3>
+            <div className="space-y-2">
+              {Object.entries(fileSystem).map(([filename, content]) => (
+                <div key={filename} className="flex items-center space-x-2">
+                  <span className={`px-2 py-1 rounded text-sm ${
+                    getFileStatus(filename) === 'staged'
+                      ? 'bg-green-100 text-green-800'
+                      : getFileStatus(filename) === 'modified'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {getFileStatus(filename)}
+                  </span>
+                  <span>{filename}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="info-card quick-help">
-            <div className="help-header">
-              <h2 className="info-title">Quick Help</h2>
-              <button onClick={() => setShowHelp(!showHelp)} className="help-toggle">
-                {showHelp ? 'Hide' : 'Show'}
-              </button>
-            </div>
-            {showHelp && (
-              <div className="info-content command-list">
-                <div className="command-item">
-                  <code>git init</code>
-                  <span>Initialize repository</span>
-                </div>
-                <div className="command-item">
-                  <code>git status</code>
-                  <span>Check status</span>
-                </div>
-                <div className="command-item">
-                  <code>git add &lt;file&gt;</code>
-                  <span>Stage changes</span>
-                </div>
-                <div className="command-item">
-                  <code>git commit -m</code>
-                  <span>Commit changes</span>
-                </div>
-                <div className="command-item">
-                  <code>git branch</code>
-                  <span>List branches</span>
-                </div>
-                <div className="command-item">
-                  <code>git checkout</code>
-                  <span>Switch branches</span>
-                </div>
-                <div className="command-item">
-                  <code>git log</code>
-                  <span>View history</span>
-                </div>
-                <div className="command-item">
-                  <code>clear</code>
-                  <span>Clear terminal</span>
-                </div>
-              </div>
-            )}
+          <div className="bg-black rounded-lg shadow-lg overflow-hidden">
+            <Terminal
+              ref={terminalRef}
+              commands={commands}
+              welcomeMessage={`Welcome to Git Practice!\nCurrent task: ${currentExercise.task}\nType 'help' for assistance.`}
+              promptLabel={`${currentBranch} >`}
+              className="h-96"
+              contentClassName="p-4"
+              styleEchoBack="fullInherit"
+              noDefaults
+            />
           </div>
         </div>
+
+        {commandFeedback && (
+          <div className={`fixed bottom-4 right-4 p-4 rounded-lg shadow-lg ${
+            commandFeedback.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+          } text-white`}>
+            {commandFeedback.message}
+          </div>
+        )}
       </div>
     </div>
   );

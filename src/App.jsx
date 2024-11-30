@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Tutorial from './pages/Tutorial';
 import Practice from './pages/Practice';
 import Progress from './pages/Progress';
+import Quiz from './pages/Quiz';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Home from './pages/Home';
@@ -35,15 +36,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route
-                  path="/tutorial"
-                  element={
-                    <ProtectedRoute>
-                      <Tutorial />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/tutorial/:section"
+                  path="/tutorial/:section?"
                   element={
                     <ProtectedRoute>
                       <Tutorial />
@@ -55,6 +48,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Practice />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/quiz/:quizId"
+                  element={
+                    <ProtectedRoute>
+                      <Quiz />
                     </ProtectedRoute>
                   }
                 />

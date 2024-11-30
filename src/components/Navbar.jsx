@@ -20,7 +20,7 @@ function Navbar() {
             {user ? (
               <>
                 <Link
-                  to="/tutorial/basics"
+                  to="/tutorial"
                   className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
                 >
                   <BookOpenIcon className="w-5 h-5" />
