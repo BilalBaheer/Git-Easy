@@ -24,7 +24,7 @@ function Home() {
         <div className="pt-20 pb-12 md:pt-32 md:pb-20 text-center">
           <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-              Master Git in Hours, Not Months
+              Master Git in Hours, Not Months      
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-10">
@@ -40,7 +40,6 @@ function Home() {
             >
               {user ? "Start Learning Now" : "Try For Free"} →
             </button>
-            <p className="text-sm text-gray-500">No credit card required to start</p>
           </div>
           
           {/* Social Proof */}
@@ -50,8 +49,8 @@ function Home() {
               <div className="text-gray-600">Active Learners</div>
             </div>
             <div className="text-center p-4 bg-white rounded-xl shadow-sm">
-              <div className="text-3xl font-bold text-blue-600">4.9/5</div>
-              <div className="text-gray-600">User Rating</div>
+              <div className="text-3xl font-bold text-blue-600">50+</div>
+              <div className="text-gray-600">Hand On Exercises</div>
             </div>
             <div className="text-center p-4 bg-white rounded-xl shadow-sm">
               <div className="text-3xl font-bold text-blue-600">92%</div>
@@ -107,7 +106,7 @@ function Home() {
                   <svg className="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                   </svg>
-                  24/7 Priority Support
+                  Full Access to Git Terminal
                 </li>
               </ul>
               <button
@@ -118,7 +117,7 @@ function Home() {
               >
                 Get Lifetime Access
               </button>
-              <p className="text-gray-400 mt-4 text-sm">30-day money-back guarantee</p>
+              {/* <p className="text-gray-400 mt-4 text-sm">30-day money-back guarantee</p> */}
             </div>
           </div>
 
@@ -147,7 +146,7 @@ function Home() {
                   <div className="text-yellow-400">★★★★★</div>
                 </div>
                 <p className="text-gray-600 mb-4">"Worth every penny! The visualizer helped me understand complex Git workflows easily."</p>
-                <div className="text-gray-700 font-medium">- Alex M.</div>
+                <div className="text-gray-700 font-medium">- Imran M.</div>
                 <div className="text-gray-500 text-sm">Frontend Developer</div>
               </div>
             </div>
@@ -165,7 +164,7 @@ function Home() {
               className="inline-flex items-center px-8 py-3 bg-blue-600 text-white rounded-lg 
                      hover:bg-blue-700 transition-colors duration-200 text-lg font-medium"
             >
-              Start Free Trial →
+              Join Now →
             </button>
           </div>
         </div>

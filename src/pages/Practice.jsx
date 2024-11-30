@@ -229,7 +229,7 @@ function Practice() {
             <Terminal
               ref={terminalRef}
               commands={commands}
-              welcomeMessage={`Welcome to Git Practice!\nCurrent task: ${currentExercise.task}\nType 'help' for assistance.`}
+              // welcomeMessage={`Welcome to Git Practice!\nCurrent task: ${currentExercise.task}\nType 'help' for assistance.`}
               promptLabel={`${currentBranch} >`}
               className="h-96"
               contentClassName="p-4"
