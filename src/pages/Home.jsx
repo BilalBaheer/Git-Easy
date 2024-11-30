@@ -35,7 +35,7 @@ function Home() {
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto mb-12 leading-relaxed">
-              Join over 10,000 developers who've mastered Git through our 
+              Join over thousands of developers who've mastered Git through our 
               revolutionary visual learning platform. Learn faster, understand better.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16">
@@ -44,7 +44,7 @@ function Home() {
                 className="cta-button px-10 py-5 text-white rounded-xl 
                          text-xl font-bold flex items-center space-x-3"
               >
-                <span>{user ? "Continue Learning" : "Start Free Trial"}</span>
+                <span>{user ? "Continue Learning" : "Start Learning Now"}</span>
                 <RocketLaunchIcon className="h-6 w-6" />
               </button>
             </div>
@@ -57,21 +57,20 @@ function Home() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="glass-card rounded-2xl p-8 text-center transform hover:scale-105 transition-all duration-300">
-              <div className="text-4xl font-black text-blue-600 mb-2">10K+</div>
+              <div className="text-4xl font-black text-blue-600 mb-2">2K+</div>
               <div className="text-gray-600 font-medium">Active Learners</div>
             </div>
             <div className="glass-card rounded-2xl p-8 text-center transform hover:scale-105 transition-all duration-300">
-              <div className="text-4xl font-black text-blue-600 mb-2">100+</div>
+              <div className="text-4xl font-black text-blue-600 mb-2">50+</div>
               <div className="text-gray-600 font-medium">Interactive Exercises</div>
             </div>
             <div className="glass-card rounded-2xl p-8 text-center transform hover:scale-105 transition-all duration-300">
-              <div className="text-4xl font-black text-blue-600 mb-2">98%</div>
+              <div className="text-4xl font-black text-blue-600 mb-2">95%</div>
               <div className="text-gray-600 font-medium">Success Rate</div>
             </div>
           </div>
         </div>
       </div>
-
       {/* Features Section */}
       <div className="max-w-7xl mx-auto px-4 py-16">
         <h2 className="text-4xl font-bold text-center mb-16">
@@ -101,9 +100,9 @@ function Home() {
             <div className="bg-blue-100 rounded-2xl p-4 w-16 h-16 flex items-center justify-center mb-6">
               <RocketLaunchIcon className="h-8 w-8 text-blue-600" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Instant Feedback</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Structured Learning</h3>
             <p className="text-gray-600 leading-relaxed">
-              Get immediate feedback on your actions and learn from your mistakes in real-time.
+              Follow our best curriculum for a structured and efficient learning experience.
             </p>
           </div>
         </div>
@@ -144,7 +143,7 @@ function Home() {
                 <svg className="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                 </svg>
-                Progress Tracking & Certificates
+                Full Access to Git Terminal
               </li>
             </ul>
             <button
@@ -153,7 +152,7 @@ function Home() {
             >
               Get Lifetime Access
             </button>
-            <p className="text-gray-500 mt-6 text-sm">30-day money-back guarantee</p>
+            {/* <p className="text-gray-500 mt-6 text-sm">30-day money-back guarantee</p> */}
           </div>
         </div>
       </div>
@@ -184,7 +183,7 @@ function Home() {
               </div>
               <div className="text-yellow-400 text-xl mb-4">★★★★★</div>
               <p className="text-gray-600 leading-relaxed text-center">
-                "The interactive exercises are brilliant. This platform has become our go-to for onboarding new developers."
+                "The interactive exercises are a game-changer. I'm learning Git like never before!"
               </p>
             </div>
             <div className="testimonial-card p-8 bg-white rounded-2xl shadow-lg flex flex-col items-center">
@@ -196,7 +195,7 @@ function Home() {
               </div>
               <div className="text-yellow-400 text-xl mb-4">★★★★★</div>
               <p className="text-gray-600 leading-relaxed text-center">
-                "Best investment in my career! The visualization tools helped me understand Git workflows that I struggled with for years."
+                "Best investment in my career! The visualization tools helped me understand Git workflows that I struggled with for long time."
               </p>
             </div>
           </div>
