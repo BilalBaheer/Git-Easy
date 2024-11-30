@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CheckCircleIcon, XCircleIcon, ArrowLongRightIcon } from '@heroicons/react/24/outline';
 import quizzes from '../data/quizzes';
+import tutorials from '../data/tutorials';
 import { useProgress } from '../context/ProgressContext';
 
 function Quiz() {
@@ -25,15 +26,20 @@ function Quiz() {
     }
   }, [quizId, navigate]);
 
-  if (!currentQuiz) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  const handleContinueLearning = () => {
+    if (!currentQuiz) return;
+    
+    const tutorial = tutorials.find(t => t.id === currentQuiz.tutorialId);
+    if (!tutorial || !tutorial.sections || tutorial.sections.length === 0) {
+      navigate('/tutorial');
+      return;
+    }
 
-  const currentQuestion = currentQuiz.questions[currentQuestionIndex];
+    // Navigate to the first section of the corresponding tutorial
+    const section = tutorial.sections[0];
+    const formattedTitle = section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    navigate(`/tutorial/${tutorial.id}-${formattedTitle}`);
+  };
 
   const handleAnswerSelect = (answerIndex) => {
     if (isAnswered) return;
@@ -41,7 +47,7 @@ function Quiz() {
     setSelectedAnswer(answerIndex);
     setIsAnswered(true);
     
-    if (answerIndex === currentQuestion.correctAnswer) {
+    if (answerIndex === currentQuiz.questions[currentQuestionIndex].correctAnswer) {
       setScore(score + 1);
     }
   };
@@ -64,6 +70,16 @@ function Quiz() {
     setScore(0);
     setShowResults(false);
   };
+
+  if (!currentQuiz) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  const currentQuestion = currentQuiz.questions[currentQuestionIndex];
 
   if (showResults) {
     const percentage = (score / currentQuiz.questions.length) * 100;
@@ -98,7 +114,7 @@ function Quiz() {
 
             <div className="space-y-4 max-w-md mx-auto">
               <button
-                onClick={() => navigate(`/tutorial/${currentQuiz.tutorialId}`)}
+                onClick={handleContinueLearning}
                 className="w-full flex items-center justify-center px-8 py-4 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors duration-200 shadow-md hover:shadow-lg"
               >
                 <span>Continue Learning</span>
