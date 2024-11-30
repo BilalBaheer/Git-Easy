@@ -6,6 +6,7 @@ import Tutorial from './pages/Tutorial';
 import Practice from './pages/Practice';
 import Progress from './pages/Progress';
 import Quiz from './pages/Quiz';
+import Visualizer from './pages/Visualizer';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Home from './pages/Home';
@@ -56,6 +57,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Quiz />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/visualizer"
+                  element={
+                    <ProtectedRoute>
+                      <Visualizer />
                     </ProtectedRoute>
                   }
                 />

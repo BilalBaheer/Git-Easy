@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { BookOpenIcon, BeakerIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext';
 
@@ -19,29 +19,27 @@ function Navbar() {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-                <Link
-                  to="/tutorial"
-                  className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
-                >
+                <NavLink to="/tutorial" className={({ isActive }) => `px-4 py-2 rounded-lg ${isActive ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}>
                   <BookOpenIcon className="w-5 h-5" />
                   <span>Learn</span>
-                </Link>
+                </NavLink>
                 
-                <Link
-                  to="/practice"
-                  className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
-                >
+                <NavLink to="/practice" className={({ isActive }) => `px-4 py-2 rounded-lg ${isActive ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}>
                   <BeakerIcon className="w-5 h-5" />
                   <span>Practice</span>
-                </Link>
+                </NavLink>
                 
-                <Link
-                  to="/progress"
-                  className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
-                >
+                <NavLink to="/progress" className={({ isActive }) => `px-4 py-2 rounded-lg ${isActive ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}>
                   <ChartBarIcon className="w-5 h-5" />
                   <span>Progress</span>
-                </Link>
+                </NavLink>
+                
+                <NavLink to="/quiz" className={({ isActive }) => `px-4 py-2 rounded-lg ${isActive ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}>
+                  Quiz
+                </NavLink>
+                <NavLink to="/visualizer" className={({ isActive }) => `px-4 py-2 rounded-lg ${isActive ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}>
+                  Visualizer
+                </NavLink>
 
                 <div className="flex items-center space-x-4 ml-4 pl-4 border-l border-gray-200">
                   <span className="text-sm text-gray-600">
