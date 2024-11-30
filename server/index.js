@@ -13,28 +13,34 @@ const startServer = async () => {
     console.log('MongoDB connected successfully');
   } catch (error) {
     console.error('MongoDB connection error:', error);
-    process.exit(1);
+    // Don't exit process in production, just log the error
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
   }
 };
 
 startServer();
 
-// Handle Vercel's feedback script requests
-app.use('/_next-live/feedback/feedback.js', (req, res, next) => {
-  res.setHeader('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval' vercel.live");
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  next();
-});
-
 // CORS configuration
 app.use(cors({
   origin: ['https://git-easy-frontend-diis1yhty-bilalbaheers-projects.vercel.app', 'http://localhost:5173'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
   credentials: true
 }));
 
 app.use(express.json());
+
+// Root route handler
+app.get('/', (req, res) => {
+  res.json({ message: 'Git-Easy API Server' });
+});
+
+// Handle Vercel toolbar requests
+app.get('/_next-live/feedback/feedback.js', (req, res) => {
+  res.status(200).send('');
+});
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -49,9 +55,17 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'Server is running successfully!' });
 });
 
+// Handle OPTIONS requests
+app.options('*', cors());
+
 // 404 handler
 app.use((req, res, next) => {
-  res.status(404).json({ message: `Route ${req.url} not found` });
+  res.status(404).json({ 
+    message: `Route ${req.url} not found`,
+    method: req.method,
+    path: req.path,
+    query: req.query
+  });
 });
 
 // Error handling middleware
