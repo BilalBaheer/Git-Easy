@@ -54,7 +54,7 @@ function Home() {
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-blue-600">100%</div>
-              <div className="text-gray-600">Interactive</div>
+              <div className="text-gray-600">Interactive with Git Terminal</div>
             </div>
           </div>
         </div>
