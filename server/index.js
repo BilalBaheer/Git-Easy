@@ -2,7 +2,6 @@ const express = require('express');
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/auth');
 const cors = require('cors');
-const helmet = require('helmet');
 require('dotenv').config();
 
 const app = express();
@@ -10,26 +9,11 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
-// Security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "vercel.live"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "blob:"],
-      connectSrc: ["'self'", "vercel.live"],
-    },
-  },
-  crossOriginEmbedderPolicy: false,
-}));
-
 // CORS configuration
 app.use(cors({
-  origin: ['https://git-easy-frontend.vercel.app', 'https://git-easy-git-main-bilalbaheers-projects.vercel.app'],
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
