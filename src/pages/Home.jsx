@@ -159,68 +159,49 @@ function Home() {
       </div>
 
       {/* Testimonials */}
-      <div className="max-w-7xl mx-auto px-4 py-24">
-        <h2 className="text-4xl font-bold text-center mb-16">
-          Loved by 
-          <span className="text-blue-600"> Developers</span>
-        </h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="testimonial-card p-8 bg-white rounded-2xl shadow-lg">
-            <div className="flex items-center mb-6">
-              <img
-                src="https://randomuser.me/api/portraits/women/32.jpg"
-                alt="Sarah K."
-                className="w-12 h-12 rounded-full"
-              />
-              <div className="ml-4">
-                <div className="font-bold text-gray-900">Sarah Kim</div>
-                <div className="text-gray-500 text-sm">Senior Developer @ Google</div>
+      <section className="testimonials py-20 bg-gray-50">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold mb-12 text-center">What Our Users Say</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="testimonial-card p-8 bg-white rounded-2xl shadow-lg flex flex-col items-center">
+              <div className="flex flex-col items-center mb-6">
+                <div className="text-center">
+                  <div className="font-bold text-gray-900">James R</div>
+                  <div className="text-gray-500 text-sm">Full Stack Engineer</div>
+                </div>
               </div>
+              <div className="text-yellow-400 text-xl mb-4">★★★★★</div>
+              <p className="text-gray-600 leading-relaxed text-center">
+                "GitBetter's visual approach to teaching Git is revolutionary. I finally understand rebasing and complex merging strategies!"
+              </p>
             </div>
-            <div className="text-yellow-400 text-xl mb-4">★★★★★</div>
-            <p className="text-gray-600 leading-relaxed">
-              "GitBetter's visual approach to teaching Git is revolutionary. I finally understand 
-              rebasing and complex merging strategies!"
-            </p>
-          </div>
-          <div className="testimonial-card p-8 bg-white rounded-2xl shadow-lg">
-            <div className="flex items-center mb-6">
-              <img
-                src="https://randomuser.me/api/portraits/men/46.jpg"
-                alt="Mike R."
-                className="w-12 h-12 rounded-full"
-              />
-              <div className="ml-4">
-                <div className="font-bold text-gray-900">Mike Rodriguez</div>
-                <div className="text-gray-500 text-sm">Lead Engineer @ Microsoft</div>
+            <div className="testimonial-card p-8 bg-white rounded-2xl shadow-lg flex flex-col items-center">
+              <div className="flex flex-col items-center mb-6">
+                <div className="text-center">
+                  <div className="font-bold text-gray-900">Mike Z</div>
+                  <div className="text-gray-500 text-sm">Software Engineer</div>
+                </div>
               </div>
+              <div className="text-yellow-400 text-xl mb-4">★★★★★</div>
+              <p className="text-gray-600 leading-relaxed text-center">
+                "The interactive exercises are brilliant. This platform has become our go-to for onboarding new developers."
+              </p>
             </div>
-            <div className="text-yellow-400 text-xl mb-4">★★★★★</div>
-            <p className="text-gray-600 leading-relaxed">
-              "The interactive exercises are brilliant. This platform has become our go-to 
-              for onboarding new developers."
-            </p>
-          </div>
-          <div className="testimonial-card p-8 bg-white rounded-2xl shadow-lg">
-            <div className="flex items-center mb-6">
-              <img
-                src="https://randomuser.me/api/portraits/women/68.jpg"
-                alt="Emma L."
-                className="w-12 h-12 rounded-full"
-              />
-              <div className="ml-4">
-                <div className="font-bold text-gray-900">Emma Liu</div>
-                <div className="text-gray-500 text-sm">Frontend Dev @ Netflix</div>
+            <div className="testimonial-card p-8 bg-white rounded-2xl shadow-lg flex flex-col items-center">
+              <div className="flex flex-col items-center mb-6">
+                <div className="text-center">
+                  <div className="font-bold text-gray-900">Imran K</div>
+                  <div className="text-gray-500 text-sm">Frontend Dev</div>
+                </div>
               </div>
+              <div className="text-yellow-400 text-xl mb-4">★★★★★</div>
+              <p className="text-gray-600 leading-relaxed text-center">
+                "Best investment in my career! The visualization tools helped me understand Git workflows that I struggled with for years."
+              </p>
             </div>
-            <div className="text-yellow-400 text-xl mb-4">★★★★★</div>
-            <p className="text-gray-600 leading-relaxed">
-              "Best investment in my career! The visualization tools helped me understand 
-              Git workflows that I struggled with for years."
-            </p>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Final CTA */}
       <div className="hero-gradient text-white py-24">
