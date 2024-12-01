@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CheckCircleIcon, XCircleIcon, ArrowLongRightIcon } from '@heroicons/react/24/outline';
+import quizzes from '../data/quizzes';
+import tutorials from '../data/tutorials';
 import { useProgress } from '../context/ProgressContext';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 function Quiz() {
   const { quizId } = useParams();
@@ -16,35 +16,34 @@ function Quiz() {
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchQuiz = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/quiz/${quizId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch quiz');
-        }
-        const data = await response.json();
-        setCurrentQuiz(data);
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching quiz:', err);
-        setError('Failed to load quiz. Please try again later.');
+    if (!quizId) {
+      // If no quizId provided, redirect to the first quiz
+      const firstQuiz = quizzes[0];
+      if (firstQuiz) {
+        navigate(`/quiz/${firstQuiz.id}`);
+      } else {
+        navigate('/tutorial');
       }
-    };
-
-    if (quizId) {
-      fetchQuiz();
+      return;
     }
-  }, [quizId]);
 
-  const handleAnswerSelect = (answer) => {
+    // Find the current quiz
+    const quiz = quizzes.find(q => q.id === parseInt(quizId, 10));
+    if (quiz) {
+      setCurrentQuiz(quiz);
+    } else {
+      navigate('/tutorial');
+    }
+  }, [quizId, navigate]);
+
+  const handleAnswerSelect = (answerIndex) => {
     if (isAnswered) return;
-    setSelectedAnswer(answer);
+    setSelectedAnswer(answerIndex);
     setIsAnswered(true);
 
-    if (answer === currentQuiz.questions[currentQuestionIndex].correctAnswer) {
+    if (answerIndex === currentQuiz.questions[currentQuestionIndex].correctAnswer) {
       setScore(prevScore => prevScore + 1);
     }
   };
@@ -69,16 +68,15 @@ function Quiz() {
   };
 
   const handleNextTutorial = () => {
-    const currentTutorialIndex = currentQuiz.tutorials.findIndex(t => t.id === currentQuiz.tutorialId);
-    if (currentTutorialIndex < currentQuiz.tutorials.length - 1) {
-      navigate(`/tutorial/${currentQuiz.tutorials[currentTutorialIndex + 1].id}`);
+    const currentTutorialIndex = tutorials.findIndex(t => t.id === currentQuiz.tutorialId);
+    if (currentTutorialIndex < tutorials.length - 1) {
+      navigate(`/tutorial/${tutorials[currentTutorialIndex + 1].id}`);
     } else {
       navigate('/progress');
     }
   };
 
   if (!currentQuiz) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
 
   if (showResults) {
     const passingScore = Math.ceil(currentQuiz.questions.length * 0.7);
@@ -131,56 +129,65 @@ function Quiz() {
   const currentQuestion = currentQuiz.questions[currentQuestionIndex];
 
   return (
-    <div className="max-w-2xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">{currentQuiz.title}</h2>
-        <div className="text-gray-600 mb-4">
+    <div className="max-w-2xl mx-auto mt-8 p-8 bg-white rounded-xl shadow-lg">
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold mb-3 text-gray-800">{currentQuiz.title}</h2>
+        <div className="text-gray-600 mb-6 text-lg">
           Question {currentQuestionIndex + 1} of {currentQuiz.questions.length}
         </div>
       </div>
 
       <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-4">{currentQuestion.question}</h3>
-        <div className="space-y-3">
-          {currentQuestion.options.map((answer, index) => (
+        <h3 className="text-xl font-semibold mb-6 text-gray-700">{currentQuestion.question}</h3>
+        <div className="space-y-4">
+          {currentQuestion.options.map((option, index) => (
             <button
               key={index}
-              onClick={() => handleAnswerSelect(answer)}
-              className={`w-full p-3 text-left rounded border ${
-                selectedAnswer === answer
-                  ? answer === currentQuestion.correctAnswer
-                    ? 'bg-green-100 border-green-500'
-                    : 'bg-red-100 border-red-500'
-                  : 'hover:bg-gray-50 border-gray-300'
-              } ${isAnswered ? 'cursor-default' : 'hover:border-gray-400'}`}
+              onClick={() => handleAnswerSelect(index)}
+              className={`w-full p-4 text-left rounded-lg transition-all duration-200 
+                ${!isAnswered ? 'hover:bg-blue-50 hover:border-blue-300 transform hover:-translate-y-0.5' : ''}
+                ${
+                  selectedAnswer === index
+                    ? index === currentQuestion.correctAnswer
+                      ? 'bg-green-50 border-2 border-green-500 text-green-700'
+                      : 'bg-red-50 border-2 border-red-500 text-red-700'
+                    : 'bg-gray-50 border-2 border-gray-200 text-gray-700'
+                }
+                font-medium text-lg shadow-sm`}
               disabled={isAnswered}
             >
-              {answer}
+              <div className="flex items-center">
+                <span className="w-8 h-8 rounded-full bg-white border-2 border-current flex items-center justify-center mr-3 text-base">
+                  {String.fromCharCode(65 + index)}
+                </span>
+                {option}
+              </div>
             </button>
           ))}
         </div>
       </div>
 
       {isAnswered && (
-        <div className="flex justify-between items-center">
-          <div className={`flex items-center ${
-            selectedAnswer === currentQuestion.correctAnswer ? 'text-green-600' : 'text-red-600'
+        <div className="flex justify-between items-center mt-6 pt-6 border-t border-gray-200">
+          <div className={`flex items-center p-3 rounded-lg ${
+            selectedAnswer === currentQuestion.correctAnswer ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
           }`}>
             {selectedAnswer === currentQuestion.correctAnswer ? (
               <>
                 <CheckCircleIcon className="h-6 w-6 mr-2" />
-                <span>Correct!</span>
+                <span className="font-medium">Correct!</span>
               </>
             ) : (
               <>
                 <XCircleIcon className="h-6 w-6 mr-2" />
-                <span>Incorrect. The correct answer is: {currentQuestion.correctAnswer}</span>
+                <span className="font-medium">Incorrect. Try again!</span>
               </>
             )}
           </div>
           <button
             onClick={handleNextQuestion}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
+              transition-colors duration-200 flex items-center font-medium shadow-md"
           >
             {currentQuestionIndex < currentQuiz.questions.length - 1 ? (
               <>
